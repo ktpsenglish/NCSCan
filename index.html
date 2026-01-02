@@ -137,17 +137,11 @@
               { id: '2-2-2', term: '操場', written: '操場', jyutping: 'cou1 coeng4', eng: 'Playground', urdu: 'کھیل کا میدان', viet: 'Sân chơi', emoji: '🏃' },
               { id: '2-2-3', term: '禮堂', written: '禮堂', jyutping: 'lai5 tong4', eng: 'Hall', urdu: 'ہال', viet: 'Hội trường', emoji: '🏟️' },
               { id: '2-2-4', term: '樓梯', written: '樓梯', jyutping: 'lau4 tai1', eng: 'Stairs', urdu: 'سیڑھیاں', viet: 'Cầu thang', emoji: '🪜' },
-              { 
-                id: '2-2-5', 
-                term: '走廊', 
-                written: '走廊', 
-                jyutping: 'zau2 long2', 
-                eng: 'Corridor', 
-                urdu: 'برآمدہ', 
-                viet: 'Hành lang', 
-                emoji: '🏫',
-                image: 'https://images.unsplash.com/photo-1596495578065-6e076cf13431?auto=format&fit=crop&w=600&q=80' 
-              },
+              { id: '2-2-6', term: '小食部', written: '小食部', jyutping: 'siu2 sik6 bou6', eng: 'Tuck shop', urdu: 'ٹک شاپ', viet: 'Căn tin', emoji: '🥪' },
+              { id: '2-2-7', term: '音樂室', written: '音樂室', jyutping: 'jam1 ngok6 sat1', eng: 'Music Room', urdu: 'میوزک روم', viet: 'Phòng âm nhạc', emoji: '🎹' },
+              { id: '2-2-8', term: '校務處', written: '校務處', jyutping: 'haau6 mou6 cyu3', eng: 'General Office', urdu: 'جنرل آفس', viet: 'Văn phòng', emoji: '🏢' },
+              { id: '2-2-9', term: '科學室', written: '科學實驗室', jyutping: 'fo1 hok6 sat1', eng: 'Science Lab', urdu: 'سائنس لیب', viet: 'Phòng thí nghiệm', emoji: '🧪' },
+              { id: '2-2-10', term: '視藝室', written: '視覺藝術室', jyutping: 'si6 ngai6 sat1', eng: 'Visual Arts Room', urdu: 'آرٹ روم', viet: 'Phòng mỹ thuật', emoji: '🎨' },
             ]
           },
           {
@@ -435,7 +429,7 @@
                     <ArrowLeft size={32} strokeWidth={3} />
                   </button>
                   <h2 className="text-4xl md:text-5xl font-black text-amber-600 ml-6 tracking-wide text-shadow-sm">
-                    選擇學習主題 Choose a topic
+                    選擇學習主題
                   </h2>
                 </div>
                 
@@ -547,20 +541,9 @@
                 </button>
 
                 <div className="mb-4">
-                  {/* 圖片或 Emoji 顯示區 */}
-                  {word.image ? (
-                    <div className="mb-6">
-                      <img 
-                        src={word.image} 
-                        alt={word.term} 
-                        className="w-64 h-64 object-cover rounded-3xl mx-auto shadow-lg border-4 border-white" 
-                      />
-                    </div>
-                  ) : (
-                    <div className="inline-block p-8 bg-yellow-50 rounded-full mb-6 border-4 border-yellow-100 animate-bounce-slow">
-                      <span className="text-9xl filter drop-shadow-md">{word.emoji}</span>
-                    </div>
-                  )}
+                  <div className="inline-block p-8 bg-yellow-50 rounded-full mb-6 border-4 border-yellow-100 animate-bounce-slow">
+                    <span className="text-9xl filter drop-shadow-md">{word.emoji}</span>
+                  </div>
                   
                   <h1 className="text-7xl md:text-8xl font-black text-gray-800 mb-4 tracking-tight">
                     {word.term}
@@ -611,8 +594,8 @@
                     {feedback === 'correct' ? (
                       <div className="text-center animate-bounce">
                         <div className="text-9xl mb-4">🌟</div>
-                        <h3 className="text-4xl font-black text-green-500 mb-2">太棒了 Awesome！</h3>
-                        <p className="text-gray-500 font-bold">讀得非常標準 Great！</p>
+                        <h3 className="text-4xl font-black text-green-500 mb-2">太棒了！</h3>
+                        <p className="text-gray-500 font-bold">讀得非常標準！</p>
                         <button onClick={() => setFeedback(null)} className="mt-8 bg-green-500 text-white px-8 py-3 rounded-full font-bold shadow-lg hover:scale-105 transition-transform">
                           繼續學習
                         </button>
@@ -620,10 +603,10 @@
                     ) : (
                       <div className="text-center">
                         <div className="text-8xl mb-4">💪</div>
-                        <h3 className="text-4xl font-black text-orange-500 mb-2">加油！Don't Give Up!</h3>
-                        <p className="text-gray-500 font-bold">再試一次吧！Try Again!</p>
+                        <h3 className="text-4xl font-black text-orange-500 mb-2">加油！</h3>
+                        <p className="text-gray-500 font-bold">再試一次吧！</p>
                         <button onClick={() => setFeedback(null)} className="mt-8 bg-orange-400 text-white px-8 py-3 rounded-full font-bold shadow-lg hover:scale-105 transition-transform">
-                          再試一次 Try Again
+                          再試一次
                         </button>
                       </div>
                     )}
@@ -645,7 +628,7 @@
             
             <div className="text-center mb-12 relative z-10">
               <span className="text-6xl mb-4 block animate-bounce">🎮</span>
-              <h2 className="text-5xl font-black text-violet-800 drop-shadow-sm">選擇測試模式 Select Quiz Mode</h2>
+              <h2 className="text-5xl font-black text-violet-800 drop-shadow-sm">選擇遊戲模式</h2>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-10 w-full max-w-5xl px-4 z-10">
@@ -657,7 +640,7 @@
                 <div className="bg-white/20 p-8 rounded-full mb-6 border-4 border-white/30">
                   <BookOpen size={64} className="text-white" />
                 </div>
-                <h3 className="text-3xl font-black">閱讀挑戰 Reading</h3>
+                <h3 className="text-3xl font-black">閱讀挑戰</h3>
                 <p className="mt-2 text-cyan-100 font-bold opacity-90">看文字，選答案</p>
               </GameButton3D>
 
@@ -669,7 +652,7 @@
                 <div className="bg-white/20 p-8 rounded-full mb-6 border-4 border-white/30">
                   <Music size={64} className="text-white" />
                 </div>
-                <h3 className="text-3xl font-black">聽力挑戰 Listening</h3>
+                <h3 className="text-3xl font-black">聽力挑戰</h3>
                 <p className="mt-2 text-pink-100 font-bold opacity-90">聽聲音，選答案</p>
               </GameButton3D>
             </div>
@@ -732,15 +715,15 @@
                   <div className="absolute -top-16 left-1/2 transform -translate-x-1/2">
                     <Trophy size={120} className="text-yellow-500 drop-shadow-lg fill-current" />
                   </div>
-                  <h2 className="text-5xl font-black text-gray-800 mb-6 mt-12">挑戰完成！Finish!</h2>
+                  <h2 className="text-5xl font-black text-gray-800 mb-6 mt-12">挑戰完成！</h2>
                   <div className="bg-gray-100 rounded-3xl p-8 mb-8">
-                    <p className="text-2xl text-gray-500 mb-2 font-bold">你的得分 Your mark</p>
+                    <p className="text-2xl text-gray-500 mb-2 font-bold">你的得分</p>
                     <span className="text-8xl font-black text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-red-500">
                       {score}
                     </span>
                   </div>
                   <GameButton3D onClick={onBack} colorClass="bg-blue-500 w-full" className="text-2xl">
-                    返回主頁 
+                    返回測試區
                   </GameButton3D>
                 </div>
               </div>
@@ -768,19 +751,7 @@
               <div className="w-full max-w-3xl bg-white rounded-[2.5rem] shadow-[0_10px_0_rgba(0,0,0,0.1)] p-10 mb-8 text-center min-h-[320px] flex flex-col justify-center items-center border-4 border-white relative">
                 {mode === 'reading' ? (
                   <>
-                     {/* 修正：在測試區也支援圖片顯示 */}
-                     {currentQ.image ? (
-                       <div className="mb-6">
-                         <img 
-                           src={currentQ.image} 
-                           alt={currentQ.term} 
-                           className="w-48 h-48 object-cover rounded-3xl mx-auto shadow-md" 
-                         />
-                       </div>
-                     ) : (
-                       <div className="text-9xl mb-6 animate-bounce-slow">{currentQ.emoji}</div>
-                     )}
-                     
+                     <div className="text-9xl mb-6 animate-bounce-slow">{currentQ.emoji}</div>
                      <p className="text-4xl text-gray-700 font-black mb-2">{currentQ.eng}</p>
                      <div className="flex space-x-4 text-xl text-gray-400 font-bold">
                        <span>{currentQ.urdu}</span>
@@ -796,7 +767,7 @@
                      >
                        <Volume2 size={80} />
                      </button>
-                     <p className="mt-6 text-gray-400 font-bold text-xl">點擊喇叭聆聽讀音 Click and listen</p>
+                     <p className="mt-6 text-gray-400 font-bold text-xl">點擊喇叭聆聽讀音</p>
                   </>
                 )}
               </div>
@@ -830,7 +801,7 @@
                     onClick={handleNext}
                     className="bg-indigo-600 hover:bg-indigo-700 text-white text-2xl font-black px-16 py-5 rounded-full shadow-[0_10px_0_rgba(0,0,0,0.3)] hover:-translate-y-1 active:translate-y-2 active:shadow-none transition-all animate-bounce"
                   >
-                    下一題 Next ➔
+                    下一題 ➔
                   </button>
                 </div>
               )}
@@ -897,7 +868,7 @@
               {view === 'quiz-game' && (
                 <QuizGame 
                   mode={quizMode} 
-                  onBack={() => setView('home')}
+                  onBack={() => setView('quiz')}
                 />
               )}
             </div>
@@ -908,6 +879,4 @@
         root.render(<App />);
     </script>
 </body>
-
 </html>
-
