@@ -1,0 +1,790 @@
+import React, { useState, useEffect, useRef } from 'react';
+import { Volume2, Mic, ArrowLeft, Star, Play, CheckCircle, XCircle, Trophy, Home, BookOpen, Brain, Sparkles, Music, Smile } from 'lucide-react';
+
+// --- 數據資料庫 (Vocabulary Data) ---
+const vocabData = [
+  {
+    id: 'greetings',
+    title: '日常禮貌',
+    titleEng: 'Greetings',
+    emoji: '👋',
+    theme: 'bg-yellow-400', 
+    words: [
+      { id: '1-1', term: '你好', written: '你好', jyutping: 'nei5 hou2', eng: 'Hello', urdu: 'ہیلو', viet: 'Xin chào', emoji: '👋' },
+      { id: '1-2', term: '早晨', written: '早安', jyutping: 'zou2 san4', eng: 'Good Morning', urdu: 'صبح بخیر', viet: 'Chào buổi sáng', emoji: '🌅' },
+      { id: '1-3', term: '午安', written: '午安', jyutping: 'ng5 on1', eng: 'Good Afternoon', urdu: 'دوپہر بخیر', viet: 'Chào buổi chiều', emoji: '☀️' },
+      { id: '1-4', term: '晚上好', written: '晚上好', jyutping: 'maan5 soeng6 hou2', eng: 'Good Evening', urdu: 'شام بخیر', viet: 'Chào buổi tối', emoji: '🌙' },
+      { id: '1-5', term: '多謝', written: '謝謝', jyutping: 'do1 ze6', eng: 'Thank you (gift)', urdu: 'شکریہ', viet: 'Cảm ơn (quà)', emoji: '🎁' },
+      { id: '1-6', term: '唔該', written: '謝謝 / 勞駕', jyutping: 'm4 goi1', eng: 'Thank you / Please', urdu: 'شکریہ / براہ کرم', viet: 'Cảm ơn / Làm ơn', emoji: '🙏' },
+      { id: '1-7', term: '再見', written: '再見', jyutping: 'zoi3 gin3', eng: 'Goodbye', urdu: 'خدا حافظ', viet: 'Tạm biệt', emoji: '👋' },
+    ]
+  },
+  {
+    id: 'school_people',
+    title: '校園人物',
+    titleEng: 'People at School',
+    emoji: '👨‍🏫',
+    theme: 'bg-blue-400',
+    words: [
+      { id: '2-1-2', term: '校長', written: '校長', jyutping: 'haau6 zoeng2', eng: 'Principal', urdu: 'پرنسپل', viet: 'Hiệu trưởng', emoji: '👨‍🏫' },
+      { id: '2-1-3', term: '老師', written: '老師', jyutping: 'lou5 si1', eng: 'Teacher', urdu: 'استاد', viet: 'Giáo viên', emoji: '👩‍🏫' },
+      { id: '2-1-4', term: '同學', written: '同學', jyutping: 'tung4 hok6', eng: 'Classmate', urdu: 'ہم جماعت', viet: 'Bạn học', emoji: '👫' },
+      { id: '2-1-5', term: '工友', written: '校工', jyutping: 'gung1 jau5', eng: 'Janitor', urdu: 'اسکول کا ملازم', viet: 'Nhân viên tạp vụ', emoji: '🧹' },
+    ]
+  },
+  {
+    id: 'school_facilities',
+    title: '校園設施',
+    titleEng: 'School Facilities',
+    emoji: '🏫',
+    theme: 'bg-indigo-400',
+    words: [
+      { id: '2-1-1', term: '學校', written: '學校', jyutping: 'hok6 haau6', eng: 'School', urdu: 'اسکول', viet: 'Trường học', emoji: '🏫' },
+      { id: '2-2-1', term: '課室', written: '教室', jyutping: 'fo3 sat1', eng: 'Classroom', urdu: 'کلاس روم', viet: 'Phòng học', emoji: '🪑' },
+      { id: '2-2-2', term: '操場', written: '操場', jyutping: 'cou1 coeng4', eng: 'Playground', urdu: 'کھیل کا میدان', viet: 'Sân chơi', emoji: '🏃' },
+      { id: '2-2-3', term: '禮堂', written: '禮堂', jyutping: 'lai5 tong4', eng: 'Hall', urdu: 'ہال', viet: 'Hội trường', emoji: '🏟️' },
+      { id: '2-2-4', term: '樓梯', written: '樓梯', jyutping: 'lau4 tai1', eng: 'Stairs', urdu: 'سیڑھیاں', viet: 'Cầu thang', emoji: '🪜' },
+      { id: '2-2-5', term: '走廊', written: '走廊', jyutping: 'zau2 long2', eng: 'Corridor', urdu: 'برآمدہ', viet: 'Hành lang', emoji: '🛣️' },
+    ]
+  },
+  {
+    id: 'numbers',
+    title: '數字',
+    titleEng: 'Numbers',
+    emoji: '🔢',
+    theme: 'bg-green-400',
+    words: [
+      { id: '3-1', term: '一', written: '一', jyutping: 'jat1', eng: 'One', urdu: 'ایک', viet: 'Một', emoji: '1️⃣' },
+      { id: '3-2', term: '二', written: '二', jyutping: 'ji6', eng: 'Two', urdu: 'دو', viet: 'Hai', emoji: '2️⃣' },
+      { id: '3-3', term: '三', written: '三', jyutping: 'saam1', eng: 'Three', urdu: 'تین', viet: 'Ba', emoji: '3️⃣' },
+      { id: '3-4', term: '四', written: '四', jyutping: 'sei3', eng: 'Four', urdu: 'چار', viet: 'Bốn', emoji: '4️⃣' },
+      { id: '3-5', term: '五', written: '五', jyutping: 'ng5', eng: 'Five', urdu: 'پانچ', viet: 'Năm', emoji: '5️⃣' },
+      { id: '3-6', term: '六', written: '六', jyutping: 'luk6', eng: 'Six', urdu: 'چھ', viet: 'Sáu', emoji: '6️⃣' },
+      { id: '3-7', term: '七', written: '七', jyutping: 'cat1', eng: 'Seven', urdu: 'سات', viet: 'Bảy', emoji: '7️⃣' },
+      { id: '3-8', term: '八', written: '八', jyutping: 'baat3', eng: 'Eight', urdu: 'آٹھ', viet: 'Tám', emoji: '8️⃣' },
+      { id: '3-9', term: '九', written: '九', jyutping: 'gau2', eng: 'Nine', urdu: 'نو', viet: 'Chín', emoji: '9️⃣' },
+      { id: '3-10', term: '十', written: '十', jyutping: 'sap6', eng: 'Ten', urdu: 'دس', viet: 'Mười', emoji: '🔟' },
+      { id: '3-11', term: '百', written: '百', jyutping: 'baak3', eng: 'Hundred', urdu: 'سو', viet: 'Trăm', emoji: '💯' },
+      { id: '3-12', term: '千', written: '千', jyutping: 'cin1', eng: 'Thousand', urdu: 'ہزار', viet: 'Nghìn', emoji: 'k' },
+    ]
+  },
+  {
+    id: 'datetime',
+    title: '月份和日子',
+    titleEng: 'Months & Days',
+    emoji: '📅',
+    theme: 'bg-orange-400',
+    words: [
+      { id: '4-1', term: '一月', written: '一月', jyutping: 'jat1 jyut6', eng: 'January', urdu: 'جنوری', viet: 'Tháng một', emoji: '🎆' },
+      { id: '4-2', term: '二月', written: '二月', jyutping: 'ji6 jyut6', eng: 'February', urdu: 'فروری', viet: 'Tháng hai', emoji: '🧧' },
+      { id: '4-3', term: '三月', written: '三月', jyutping: 'saam1 jyut6', eng: 'March', urdu: 'مارچ', viet: 'Tháng ba', emoji: '🌱' },
+      { id: '4-4', term: '四月', written: '四月', jyutping: 'sei3 jyut6', eng: 'April', urdu: 'اپریل', viet: 'Tháng tư', emoji: '🐇' },
+      { id: '4-5', term: '五月', written: '五月', jyutping: 'ng5 jyut6', eng: 'May', urdu: 'مئی', viet: 'Tháng năm', emoji: '💐' },
+      { id: '4-6', term: '六月', written: '六月', jyutping: 'luk6 jyut6', eng: 'June', urdu: 'جون', viet: 'Tháng sáu', emoji: '☀️' },
+      { id: '4-7', term: '七月', written: '七月', jyutping: 'cat1 jyut6', eng: 'July', urdu: 'جولائی', viet: 'Tháng bảy', emoji: '🍦' },
+      { id: '4-8', term: '八月', written: '八月', jyutping: 'baat3 jyut6', eng: 'August', urdu: 'اگست', viet: 'Tháng tám', emoji: '🏖️' },
+      { id: '4-9', term: '九月', written: '九月', jyutping: 'gau2 jyut6', eng: 'September', urdu: 'ستمبر', viet: 'Tháng chín', emoji: '🎒' },
+      { id: '4-10', term: '十月', written: '十月', jyutping: 'sap6 jyut6', eng: 'October', urdu: 'اکتوبر', viet: 'Tháng mười', emoji: '🎃' },
+      { id: '4-11', term: '十一月', written: '十一月', jyutping: 'sap6 jat1 jyut6', eng: 'November', urdu: 'نومبر', viet: 'Tháng mười một', emoji: '🍂' },
+      { id: '4-12', term: '十二月', written: '十二月', jyutping: 'sap6 ji6 jyut6', eng: 'December', urdu: 'دسمبر', viet: 'Tháng mười hai', emoji: '🎄' },
+      { id: '4-13', term: '星期日', written: '星期日', jyutping: 'sing1 kei4 jat6', eng: 'Sunday', urdu: 'اتوار', viet: 'Chủ nhật', emoji: '🌞' },
+      { id: '4-14', term: '星期一', written: '星期一', jyutping: 'sing1 kei4 jat1', eng: 'Monday', urdu: 'پیر', viet: 'Thứ hai', emoji: '1️⃣' },
+      { id: '4-15', term: '星期二', written: '星期二', jyutping: 'sing1 kei4 ji6', eng: 'Tuesday', urdu: 'منگل', viet: 'Thứ ba', emoji: '2️⃣' },
+      { id: '4-16', term: '星期三', written: '星期三', jyutping: 'sing1 kei4 saam1', eng: 'Wednesday', urdu: 'بدھ', viet: 'Thứ tư', emoji: '3️⃣' },
+      { id: '4-17', term: '星期四', written: '星期四', jyutping: 'sing1 kei4 sei3', eng: 'Thursday', urdu: 'جمعرات', viet: 'Thứ năm', emoji: '4️⃣' },
+      { id: '4-18', term: '星期五', written: '星期五', jyutping: 'sing1 kei4 ng5', eng: 'Friday', urdu: 'جمعہ', viet: 'Thứ sáu', emoji: '5️⃣' },
+      { id: '4-19', term: '星期六', written: '星期六', jyutping: 'sing1 kei4 luk6', eng: 'Saturday', urdu: 'ہفتہ', viet: 'Thứ bảy', emoji: '6️⃣' },
+    ]
+  },
+  {
+    id: 'time',
+    title: '時間',
+    titleEng: 'Time',
+    emoji: '⏰',
+    theme: 'bg-red-400',
+    words: [
+      { id: '5-1', term: '早上', written: '早上', jyutping: 'zou2 soeng6', eng: 'Morning', urdu: 'صبح', viet: 'Buổi sáng', emoji: '🌅' },
+      { id: '5-2', term: '中午', written: '中午', jyutping: 'zung1 ng5', eng: 'Noon', urdu: 'دوپہر', viet: 'Buổi trưa', emoji: '☀️' },
+      { id: '5-3', term: '下午', written: '下午', jyutping: 'haa6 ng5', eng: 'Afternoon', urdu: 'سہ پہر', viet: 'Buổi chiều', emoji: '🌤️' },
+      { id: '5-4', term: '晚上', written: '晚上', jyutping: 'maan5 soeng6', eng: 'Night', urdu: 'رات', viet: 'Buổi tối', emoji: '🌙' },
+      { id: '5-5', term: '時', written: '小時', jyutping: 'si4', eng: 'Hour', urdu: 'گھنٹہ', viet: 'Giờ', emoji: '⏳' },
+      { id: '5-6', term: '分', written: '分鐘', jyutping: 'fan1', eng: 'Minute', urdu: 'منٹ', viet: 'Phút', emoji: '⏱️' },
+    ]
+  },
+  {
+    id: 'emotions',
+    title: '情緒喜好',
+    titleEng: 'Emotions',
+    emoji: '😊',
+    theme: 'bg-pink-400',
+    words: [
+      { id: '6-1', term: '開心', written: '快樂', jyutping: 'hoi1 sam1', eng: 'Happy', urdu: 'خوش', viet: 'Vui vẻ', emoji: '😄' },
+      { id: '6-2', term: '高興', written: '高興', jyutping: 'gou1 hing3', eng: 'Glad', urdu: 'خوش', viet: 'Hân hoan', emoji: '😆' },
+      { id: '6-3', term: '傷心', written: '難過', jyutping: 'soeng1 sam1', eng: 'Sad', urdu: 'اداس', viet: 'Buồn', emoji: '😢' },
+      { id: '6-4', term: '生氣', written: '憤怒', jyutping: 'saang1 hei3', eng: 'Angry', urdu: 'ناراض', viet: 'Tức giận', emoji: '😡' },
+      { id: '6-5', term: '驚', written: '害怕', jyutping: 'geng1', eng: 'Scared', urdu: 'خوفزدہ', viet: 'Sợ hãi', emoji: '😱' },
+      { id: '6-6', term: '鐘意', written: '喜歡', jyutping: 'zung1 ji3', eng: 'Like', urdu: 'پسند', viet: 'Thích', emoji: '❤️' },
+    ]
+  },
+  {
+    id: 'colors',
+    title: '顏色',
+    titleEng: 'Colors',
+    emoji: '🎨',
+    theme: 'bg-purple-400',
+    words: [
+      { id: '7-1', term: '紅色', written: '紅色', jyutping: 'hung4 sik1', eng: 'Red', urdu: 'سرخ', viet: 'Màu đỏ', emoji: '🔴' },
+      { id: '7-2', term: '藍色', written: '藍色', jyutping: 'laam4 sik1', eng: 'Blue', urdu: 'نیلا', viet: 'Màu xanh dương', emoji: '🔵' },
+      { id: '7-3', term: '黃色', written: '黃色', jyutping: 'wong4 sik1', eng: 'Yellow', urdu: 'پیلا', viet: 'Màu vàng', emoji: '🟡' },
+      { id: '7-4', term: '綠色', written: '綠色', jyutping: 'luk6 sik1', eng: 'Green', urdu: 'سبز', viet: 'Màu xanh lá', emoji: '🟢' },
+      { id: '7-5', term: '白色', written: '白色', jyutping: 'baak6 sik1', eng: 'White', urdu: 'سفید', viet: 'Màu trắng', emoji: '⚪' },
+      { id: '7-6', term: '黑色', written: '黑色', jyutping: 'hak1 sik1', eng: 'Black', urdu: 'سیاہ', viet: 'Màu đen', emoji: '⚫' },
+      { id: '7-7', term: '橙色', written: '橙色', jyutping: 'caang2 sik1', eng: 'Orange', urdu: 'مالٹا', viet: 'Màu cam', emoji: '🟠' },
+      { id: '7-8', term: '紫色', written: '紫色', jyutping: 'zi2 sik1', eng: 'Purple', urdu: 'جامنی', viet: 'Màu tím', emoji: '🟣' },
+      { id: '7-9', term: '粉紅色', written: '粉紅色', jyutping: 'fan2 hung4 sik1', eng: 'Pink', urdu: 'گلابی', viet: 'Màu hồng', emoji: '🌸' },
+    ]
+  },
+  {
+    id: 'adjectives',
+    title: '形容詞',
+    titleEng: 'Adjectives',
+    emoji: '📏',
+    theme: 'bg-cyan-400',
+    words: [
+      { id: '8-1', term: '大', written: '大', jyutping: 'daai6', eng: 'Big', urdu: 'بڑا', viet: 'To/Lớn', emoji: '🐘' },
+      { id: '8-2', term: '小', written: '小', jyutping: 'siu2', eng: 'Small', urdu: 'چھوٹا', viet: 'Nhỏ/Bé', emoji: '🐜' },
+      { id: '8-3', term: '長', written: '長', jyutping: 'coeng4', eng: 'Long', urdu: 'لمبا', viet: 'Dài', emoji: '🦒' },
+      { id: '8-4', term: '短', written: '短', jyutping: 'dyun2', eng: 'Short', urdu: 'مختصر', viet: 'Ngắn', emoji: '🐛' },
+      { id: '8-5', term: '快', written: '快', jyutping: 'faai3', eng: 'Fast', urdu: 'تیز', viet: 'Nhanh', emoji: '🐆' },
+      { id: '8-6', term: '慢', written: '慢', jyutping: 'maan6', eng: 'Slow', urdu: 'آہستہ', viet: 'Chậm', emoji: '🐢' },
+      { id: '8-7', term: '高', written: '高', jyutping: 'gou1', eng: 'Tall', urdu: 'لمبا', viet: 'Cao', emoji: '🦒' },
+      { id: '8-8', term: '矮', written: '矮', jyutping: 'ai2', eng: 'Short', urdu: 'چھوٹا', viet: 'Thấp', emoji: '🐕' },
+    ]
+  },
+];
+
+// --- 輔助功能 ---
+
+// 音效生成器 (Web Audio API)
+const playFeedbackSound = (type) => {
+  const AudioContext = window.AudioContext || window.webkitAudioContext;
+  if (!AudioContext) return;
+  
+  const ctx = new AudioContext();
+  const now = ctx.currentTime;
+  
+  if (type === 'correct') {
+    // 有趣的「叮！」正確音效 (類似獲得金幣)
+    // 振盪器 1：主旋律
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    
+    osc.type = 'triangle'; // 三角波聽起來比較像電玩音樂
+    
+    // 音高變化：快速上升
+    osc.frequency.setValueAtTime(523.25, now); // C5
+    osc.frequency.linearRampToValueAtTime(1046.50, now + 0.1); // C6
+    
+    // 音量變化
+    gain.gain.setValueAtTime(0, now);
+    gain.gain.linearRampToValueAtTime(0.3, now + 0.05);
+    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.4);
+    
+    osc.start(now);
+    osc.stop(now + 0.4);
+
+    // 振盪器 2：增加豐富度的泛音 (五度音)
+    const osc2 = ctx.createOscillator();
+    const gain2 = ctx.createGain();
+    osc2.connect(gain2);
+    gain2.connect(ctx.destination);
+    osc2.type = 'sine';
+    
+    osc2.frequency.setValueAtTime(783.99, now); // G5
+    osc2.frequency.linearRampToValueAtTime(1567.98, now + 0.1); // G6
+    
+    gain2.gain.setValueAtTime(0, now);
+    gain2.gain.linearRampToValueAtTime(0.1, now + 0.05);
+    gain2.gain.exponentialRampToValueAtTime(0.01, now + 0.4);
+    
+    osc2.start(now);
+    osc2.stop(now + 0.4);
+
+  } else {
+    // 有趣的「Bwoop」錯誤音效 (卡通滑落聲)
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    
+    osc.type = 'sawtooth'; // 鋸齒波比較有質感
+    
+    // 音高變化：快速滑落
+    osc.frequency.setValueAtTime(300, now);
+    osc.frequency.exponentialRampToValueAtTime(50, now + 0.3);
+    
+    // 音量變化
+    gain.gain.setValueAtTime(0.1, now);
+    gain.gain.linearRampToValueAtTime(0.01, now + 0.3);
+    
+    osc.start(now);
+    osc.stop(now + 0.3);
+  }
+};
+
+const speakCantonese = (text) => {
+  if ('speechSynthesis' in window) {
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.rate = 0.8; 
+    const voices = window.speechSynthesis.getVoices();
+    const cantoneseVoice = voices.find(v => v.lang.includes('HK') || v.lang.includes('yue'));
+    if (cantoneseVoice) {
+      utterance.voice = cantoneseVoice;
+      utterance.lang = cantoneseVoice.lang;
+    } else {
+      utterance.lang = 'zh-HK';
+    }
+    window.speechSynthesis.speak(utterance);
+  } else {
+    alert("您的瀏覽器不支持語音合成功能。");
+  }
+};
+
+// --- 共用 UI 元件 ---
+
+const GameButton3D = ({ onClick, colorClass, children, className = "" }) => (
+  <button 
+    onClick={onClick}
+    className={`${colorClass} ${className} relative text-white font-bold py-4 px-6 rounded-3xl border-b-8 border-opacity-30 border-black active:border-b-0 active:translate-y-2 transition-all transform hover:-translate-y-1 shadow-xl`}
+  >
+    {children}
+  </button>
+);
+
+const IconButton = ({ onClick, icon: Icon, color, label }) => (
+  <button 
+    onClick={onClick}
+    className={`flex flex-col items-center justify-center w-28 h-28 rounded-full shadow-[0_8px_0_rgba(0,0,0,0.15)] active:shadow-none active:translate-y-2 transition-all transform hover:scale-105 border-4 border-white ${color}`}
+  >
+    <Icon size={40} className="text-white drop-shadow-md" />
+    <span className="text-white font-bold mt-1 text-sm drop-shadow-md">{label}</span>
+  </button>
+);
+
+const BackgroundDecorations = () => (
+  <div className="fixed inset-0 pointer-events-none overflow-hidden z-0 opacity-20">
+    <div className="absolute top-10 left-10 text-9xl animate-pulse">☁️</div>
+    <div className="absolute top-20 right-20 text-8xl animate-bounce-slow">🌟</div>
+    <div className="absolute bottom-10 left-20 text-8xl animate-bounce">🎈</div>
+    <div className="absolute bottom-40 right-10 text-9xl">🌈</div>
+  </div>
+);
+
+// --- 組件 ---
+
+// 主畫面
+const HomeScreen = ({ onNavigate }) => (
+  <div className="relative flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-sky-300 to-indigo-200 p-4 overflow-hidden">
+    <BackgroundDecorations />
+    
+    <div className="z-10 text-center space-y-6 mb-12">
+      <div className="bg-white/30 backdrop-blur-md p-6 rounded-full border-4 border-white shadow-xl inline-block mb-4">
+        <span className="text-8xl">🐼</span>
+      </div>
+      <h1 className="text-6xl md:text-7xl font-black text-white drop-shadow-[0_4px_4px_rgba(0,0,0,0.3)] tracking-wider stroke-text">
+        廣東話<br/>趣味學堂
+      </h1>
+      <p className="text-2xl text-indigo-900 font-bold bg-white/50 inline-block px-6 py-2 rounded-full">
+        Cantonese Fun Learning
+      </p>
+    </div>
+    
+    <div className="z-10 grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-4xl px-4">
+      <GameButton3D 
+        onClick={() => onNavigate('learning')} 
+        colorClass="bg-gradient-to-br from-green-400 to-emerald-500"
+        className="flex flex-col items-center justify-center py-10"
+      >
+        <div className="bg-white/20 p-6 rounded-full mb-4 animate-bounce-slow">
+          <BookOpen size={64} className="text-white" />
+        </div>
+        <h2 className="text-4xl font-black mb-2">學習區</h2>
+        <p className="text-green-100 font-medium text-lg">Learning Zone</p>
+      </GameButton3D>
+
+      <GameButton3D 
+        onClick={() => onNavigate('quiz')} 
+        colorClass="bg-gradient-to-br from-orange-400 to-red-500"
+        className="flex flex-col items-center justify-center py-10"
+      >
+        <div className="bg-white/20 p-6 rounded-full mb-4 animate-pulse">
+          <Brain size={64} className="text-white" />
+        </div>
+        <h2 className="text-4xl font-black mb-2">測試區</h2>
+        <p className="text-orange-100 font-medium text-lg">Quiz Zone</p>
+      </GameButton3D>
+    </div>
+  </div>
+);
+
+// 學習區：主題選擇
+const CategoryList = ({ onSelectCategory, onBack }) => (
+  <div className="min-h-screen bg-amber-50 p-6 relative">
+    <div className="max-w-7xl mx-auto relative z-10">
+      <div className="flex items-center mb-8">
+        <button onClick={onBack} className="bg-white text-amber-600 p-3 rounded-full shadow-lg border-4 border-amber-200 hover:scale-110 transition-transform">
+          <ArrowLeft size={32} strokeWidth={3} />
+        </button>
+        <h2 className="text-4xl md:text-5xl font-black text-amber-600 ml-6 tracking-wide text-shadow-sm">
+          選擇學習主題
+        </h2>
+      </div>
+      
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        {vocabData.map((cat) => (
+          <button
+            key={cat.id}
+            onClick={() => onSelectCategory(cat)}
+            className={`${cat.theme} group relative rounded-[2rem] p-6 shadow-[0_8px_0_rgba(0,0,0,0.15)] active:shadow-none active:translate-y-2 hover:-translate-y-2 transition-all border-4 border-white flex flex-col items-center justify-between min-h-[220px]`}
+          >
+            <div className="absolute top-4 right-4 opacity-50 text-white transform group-hover:rotate-12 transition-transform">
+              <Sparkles size={24} />
+            </div>
+            <span className="text-7xl drop-shadow-md transform group-hover:scale-125 transition-transform duration-300">
+              {cat.emoji}
+            </span>
+            <div className="w-full bg-black/10 rounded-xl py-2 mt-4 backdrop-blur-sm">
+              <span className="text-2xl font-black text-white block text-center shadow-black drop-shadow-md">
+                {cat.title}
+              </span>
+              <span className="text-md font-bold text-white/90 block text-center mt-1">
+                {cat.titleEng}
+              </span>
+            </div>
+          </button>
+        ))}
+      </div>
+    </div>
+    
+    {/* 背景裝飾 */}
+    <div className="fixed bottom-0 left-0 w-full h-24 bg-repeat-x opacity-20" style={{backgroundImage: 'radial-gradient(circle, #f59e0b 20%, transparent 20%)', backgroundSize: '40px 40px'}}></div>
+  </div>
+);
+
+// 學習區：單字卡
+const WordCard = ({ word, onNext, onPrev, onBack, categoryColor }) => {
+  const [isListening, setIsListening] = useState(false);
+  const [feedback, setFeedback] = useState(null); 
+  const recognitionRef = useRef(null);
+
+  const handleSpeak = () => speakCantonese(word.term);
+
+  // 當字詞改變時，停止錄音並重置狀態
+  useEffect(() => {
+    if (recognitionRef.current) {
+      // 關鍵修復：當切換字詞時，移除回調函數，防止舊的識別結果觸發「錯誤」反饋
+      recognitionRef.current.onresult = null;
+      recognitionRef.current.onend = null;
+      recognitionRef.current.stop();
+    }
+    setIsListening(false);
+    setFeedback(null);
+  }, [word]);
+
+  const handleListen = () => {
+    if (!('webkitSpeechRecognition' in window)) {
+      alert("請使用 Chrome 瀏覽器");
+      return;
+    }
+
+    // 每次開始錄音前，先確保舊的實例已停止
+    if (recognitionRef.current) {
+      recognitionRef.current.stop();
+    }
+
+    const recognition = new window.webkitSpeechRecognition();
+    recognition.lang = 'zh-HK';
+    recognition.continuous = false;
+    recognition.interimResults = false;
+
+    recognitionRef.current = recognition;
+
+    recognition.onstart = () => {
+      setIsListening(true);
+      setFeedback(null);
+    };
+
+    recognition.onend = () => {
+      setIsListening(false);
+    };
+
+    recognition.onresult = (event) => {
+      const transcript = event.results[0][0].transcript;
+      if (transcript.includes(word.term) || transcript.includes(word.written)) {
+        setFeedback('correct');
+      } else {
+        setFeedback('incorrect');
+      }
+    };
+    recognition.start();
+  };
+
+  return (
+    <div className={`min-h-screen ${categoryColor} flex flex-col items-center justify-center p-4 transition-colors duration-500`}>
+      <div className="w-full max-w-5xl mb-6 flex justify-between items-center z-10">
+        <button onClick={onBack} className="bg-white/20 text-white p-3 rounded-full hover:bg-white/40 transition-colors backdrop-blur-md border-2 border-white/50">
+          <Home size={32} />
+        </button>
+        <div className="bg-white/20 px-6 py-2 rounded-full text-white font-bold backdrop-blur-md border-2 border-white/50">
+          學習模式
+        </div>
+      </div>
+
+      <div className="relative bg-white rounded-[3rem] shadow-[0_12px_0_rgba(0,0,0,0.1)] p-8 w-full max-w-3xl text-center border-8 border-white">
+        
+        {/* Navigation Arrows */}
+        <button onClick={onPrev} className="absolute -left-4 md:-left-16 top-1/2 transform -translate-y-1/2 p-4 bg-white rounded-full shadow-lg text-gray-400 hover:text-gray-800 hover:scale-110 transition-all border-4 border-gray-100">
+          <ArrowLeft size={32} strokeWidth={3} />
+        </button>
+        <button onClick={onNext} className="absolute -right-4 md:-right-16 top-1/2 transform -translate-y-1/2 p-4 bg-white rounded-full shadow-lg text-gray-400 hover:text-gray-800 hover:scale-110 transition-all rotate-180 border-4 border-gray-100">
+          <ArrowLeft size={32} strokeWidth={3} />
+        </button>
+
+        <div className="mb-8">
+          <div className="inline-block p-8 bg-yellow-50 rounded-full mb-6 border-4 border-yellow-100 animate-bounce-slow">
+            <span className="text-9xl filter drop-shadow-md">{word.emoji}</span>
+          </div>
+          
+          <h1 className="text-7xl md:text-8xl font-black text-gray-800 mb-4 tracking-tight">
+            {word.term}
+          </h1>
+          
+          <div className="inline-block bg-blue-100 px-6 py-2 rounded-2xl mb-8 transform -rotate-2">
+            <p className="text-3xl text-blue-600 font-mono font-bold tracking-wide">{word.jyutping}</p>
+          </div>
+          
+          {word.term !== word.written && (
+            <p className="text-xl text-gray-400 font-bold mb-6">書面語: {word.written}</p>
+          )}
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 bg-gray-50 p-6 rounded-3xl border-4 border-gray-100">
+             <div className="bg-blue-50 p-3 rounded-2xl">
+               <span className="block text-xs text-blue-400 font-black uppercase tracking-wider mb-1">English</span>
+               <span className="text-xl font-bold text-blue-900">{word.eng}</span>
+             </div>
+             <div className="bg-green-50 p-3 rounded-2xl">
+               <span className="block text-xs text-green-400 font-black uppercase tracking-wider mb-1">Urdu</span>
+               <span className="text-xl font-bold text-green-900 font-urdu">{word.urdu}</span>
+             </div>
+             <div className="bg-pink-50 p-3 rounded-2xl">
+               <span className="block text-xs text-pink-400 font-black uppercase tracking-wider mb-1">Vietnamese</span>
+               <span className="text-xl font-bold text-pink-900">{word.viet}</span>
+             </div>
+          </div>
+        </div>
+
+        <div className="flex justify-center space-x-8">
+          <IconButton 
+            onClick={handleSpeak} 
+            icon={Volume2} 
+            color="bg-blue-400 hover:bg-blue-500" 
+            label="聽聽看" 
+          />
+          <IconButton 
+            onClick={handleListen} 
+            icon={Mic} 
+            color={`${isListening ? 'bg-red-500 animate-pulse' : 'bg-purple-400 hover:bg-purple-500'}`} 
+            label={isListening ? '聆聽中...' : '讀讀看'} 
+          />
+        </div>
+
+        {/* AI Feedback Overlay */}
+        {feedback && (
+          <div className="absolute inset-0 bg-white/90 rounded-[2.5rem] flex flex-col items-center justify-center z-20 animate-fadeIn backdrop-blur-sm">
+            {feedback === 'correct' ? (
+              <div className="text-center animate-bounce">
+                <div className="text-9xl mb-4">🌟</div>
+                <h3 className="text-4xl font-black text-green-500 mb-2">太棒了！</h3>
+                <p className="text-gray-500 font-bold">讀得非常標準！</p>
+                <button onClick={() => setFeedback(null)} className="mt-8 bg-green-500 text-white px-8 py-3 rounded-full font-bold shadow-lg hover:scale-105 transition-transform">
+                  繼續學習
+                </button>
+              </div>
+            ) : (
+              <div className="text-center">
+                <div className="text-8xl mb-4">💪</div>
+                <h3 className="text-4xl font-black text-orange-500 mb-2">加油！</h3>
+                <p className="text-gray-500 font-bold">再試一次吧！</p>
+                <button onClick={() => setFeedback(null)} className="mt-8 bg-orange-400 text-white px-8 py-3 rounded-full font-bold shadow-lg hover:scale-105 transition-transform">
+                  再試一次
+                </button>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+// 測試區：模式選擇
+const QuizModeSelect = ({ onSelectMode, onBack }) => (
+  <div className="min-h-screen bg-violet-100 flex flex-col items-center justify-center p-6 relative overflow-hidden">
+    <div className="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none" style={{backgroundImage: 'radial-gradient(#8b5cf6 2px, transparent 2px)', backgroundSize: '30px 30px'}}></div>
+    
+    <button onClick={onBack} className="absolute top-6 left-6 bg-white p-3 rounded-full shadow-lg text-violet-600 border-4 border-violet-200 z-10">
+      <Home size={32} strokeWidth={3} />
+    </button>
+    
+    <div className="text-center mb-12 relative z-10">
+      <span className="text-6xl mb-4 block animate-bounce">🎮</span>
+      <h2 className="text-5xl font-black text-violet-800 drop-shadow-sm">選擇遊戲模式</h2>
+    </div>
+    
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-10 w-full max-w-5xl px-4 z-10">
+      <GameButton3D 
+        onClick={() => onSelectMode('reading')} 
+        colorClass="bg-cyan-500"
+        className="flex flex-col items-center py-12"
+      >
+        <div className="bg-white/20 p-8 rounded-full mb-6 border-4 border-white/30">
+          <BookOpen size={64} className="text-white" />
+        </div>
+        <h3 className="text-3xl font-black">閱讀挑戰</h3>
+        <p className="mt-2 text-cyan-100 font-bold opacity-90">看文字，選答案</p>
+      </GameButton3D>
+
+      <GameButton3D 
+        onClick={() => onSelectMode('listening')} 
+        colorClass="bg-pink-500"
+        className="flex flex-col items-center py-12"
+      >
+        <div className="bg-white/20 p-8 rounded-full mb-6 border-4 border-white/30">
+          <Music size={64} className="text-white" />
+        </div>
+        <h3 className="text-3xl font-black">聽力挑戰</h3>
+        <p className="mt-2 text-pink-100 font-bold opacity-90">聽聲音，選答案</p>
+      </GameButton3D>
+    </div>
+  </div>
+);
+
+// 測試區：遊戲畫面
+const QuizGame = ({ mode, onBack }) => {
+  const [questions, setQuestions] = useState([]);
+  const [currentQIndex, setCurrentQIndex] = useState(0);
+  const [score, setScore] = useState(0);
+  const [showResult, setShowResult] = useState(false);
+  const [answered, setAnswered] = useState(false);
+  const [selectedOption, setSelectedOption] = useState(null);
+
+  useEffect(() => {
+    const allWords = vocabData.flatMap(cat => cat.words);
+    const shuffled = [...allWords].sort(() => 0.5 - Math.random());
+    const selected = shuffled.slice(0, 10).map(word => {
+      const distractors = allWords
+        .filter(w => w.id !== word.id)
+        .sort(() => 0.5 - Math.random())
+        .slice(0, 3)
+        .map(w => w.term);
+      const options = [...distractors, word.term].sort(() => 0.5 - Math.random());
+      return { ...word, options };
+    });
+    setQuestions(selected);
+  }, []);
+
+  const handleOptionClick = (option) => {
+    if (answered) return;
+    setSelectedOption(option);
+    setAnswered(true);
+    if (option === questions[currentQIndex].term) {
+      setScore(s => s + 10);
+      playFeedbackSound('correct'); // 修改：播放正確音效
+    } else {
+      playFeedbackSound('incorrect'); // 修改：播放錯誤音效
+    }
+  };
+
+  const handleNext = () => {
+    if (currentQIndex < questions.length - 1) {
+      setCurrentQIndex(c => c + 1);
+      setAnswered(false);
+      setSelectedOption(null);
+    } else {
+      setShowResult(true);
+    }
+  };
+
+  if (questions.length === 0) return <div className="flex h-screen items-center justify-center text-3xl font-bold text-gray-500">準備遊戲中...</div>;
+
+  if (showResult) {
+    return (
+      <div className="min-h-screen bg-yellow-400 flex flex-col items-center justify-center p-6 relative overflow-hidden">
+        <BackgroundDecorations />
+        <div className="bg-white p-12 rounded-[3rem] shadow-[0_20px_0_rgba(0,0,0,0.1)] text-center max-w-xl w-full border-8 border-white relative z-10 animate-bounce-slow">
+          <div className="absolute -top-16 left-1/2 transform -translate-x-1/2">
+            <Trophy size={120} className="text-yellow-500 drop-shadow-lg fill-current" />
+          </div>
+          <h2 className="text-5xl font-black text-gray-800 mb-6 mt-12">挑戰完成！</h2>
+          <div className="bg-gray-100 rounded-3xl p-8 mb-8">
+            <p className="text-2xl text-gray-500 mb-2 font-bold">你的得分</p>
+            <span className="text-8xl font-black text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-red-500">
+              {score}
+            </span>
+          </div>
+          <GameButton3D onClick={onBack} colorClass="bg-blue-500 w-full" className="text-2xl">
+            返回主頁
+          </GameButton3D>
+        </div>
+      </div>
+    );
+  }
+
+  const currentQ = questions[currentQIndex];
+
+  return (
+    <div className="min-h-screen bg-sky-200 flex flex-col items-center p-4">
+      <div className="w-full max-w-4xl flex justify-between items-center mb-6 mt-4">
+        <button onClick={onBack} className="bg-white/30 p-3 rounded-full hover:bg-white/50 text-white border-2 border-white/50">
+          <XCircle size={32} />
+        </button>
+        <div className="flex space-x-4">
+          <div className="bg-white/30 px-6 py-2 rounded-full text-white font-bold border-2 border-white/50 backdrop-blur-sm">
+            第 {currentQIndex + 1} / {questions.length} 題
+          </div>
+          <div className="bg-yellow-400 px-6 py-2 rounded-full text-yellow-900 font-bold border-b-4 border-yellow-600 shadow-lg">
+            得分: {score}
+          </div>
+        </div>
+      </div>
+
+      <div className="w-full max-w-3xl bg-white rounded-[2.5rem] shadow-[0_10px_0_rgba(0,0,0,0.1)] p-10 mb-8 text-center min-h-[320px] flex flex-col justify-center items-center border-4 border-white relative">
+        {mode === 'reading' ? (
+          <>
+             <div className="text-9xl mb-6 animate-bounce-slow">{currentQ.emoji}</div>
+             <p className="text-4xl text-gray-700 font-black mb-2">{currentQ.eng}</p>
+             <div className="flex space-x-4 text-xl text-gray-400 font-bold">
+               <span>{currentQ.urdu}</span>
+               <span>•</span>
+               <span>{currentQ.viet}</span>
+             </div>
+          </>
+        ) : (
+          <>
+             <button 
+               onClick={() => speakCantonese(currentQ.term)}
+               className="bg-blue-400 hover:bg-blue-500 text-white rounded-full p-10 shadow-[0_10px_0_rgba(0,0,0,0.2)] active:shadow-none active:translate-y-2 transition-all"
+             >
+               <Volume2 size={80} />
+             </button>
+             <p className="mt-6 text-gray-400 font-bold text-xl">點擊喇叭聆聽讀音</p>
+          </>
+        )}
+      </div>
+
+      <div className="grid grid-cols-2 gap-6 w-full max-w-3xl">
+        {currentQ.options.map((opt, idx) => {
+          let btnClass = "bg-white text-gray-600 border-b-8 border-gray-200 hover:-translate-y-1 hover:border-gray-300";
+          
+          if (answered) {
+            if (opt === currentQ.term) btnClass = "bg-green-400 text-white border-green-600 shadow-none translate-y-1"; 
+            else if (opt === selectedOption) btnClass = "bg-red-400 text-white border-red-600 opacity-50"; 
+            else btnClass = "bg-gray-100 text-gray-300 border-transparent opacity-50"; 
+          }
+
+          return (
+            <button 
+              key={idx} 
+              onClick={() => handleOptionClick(opt)}
+              disabled={answered}
+              className={`${btnClass} text-3xl font-black py-8 rounded-3xl shadow-lg transition-all duration-200 border-2 border-t-0 border-l-0 border-r-0`}
+            >
+              {opt}
+            </button>
+          );
+        })}
+      </div>
+
+      {answered && (
+        <div className="fixed bottom-8 w-full flex justify-center z-20">
+          <button 
+            onClick={handleNext}
+            className="bg-indigo-600 hover:bg-indigo-700 text-white text-2xl font-black px-16 py-5 rounded-full shadow-[0_10px_0_rgba(0,0,0,0.3)] hover:-translate-y-1 active:translate-y-2 active:shadow-none transition-all animate-bounce"
+          >
+            下一題 ➔
+          </button>
+        </div>
+      )}
+    </div>
+  );
+};
+
+// --- 主應用程式入口 ---
+
+export default function App() {
+  const [view, setView] = useState('home'); 
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [currentWordIndex, setCurrentWordIndex] = useState(0);
+  const [quizMode, setQuizMode] = useState(null);
+
+  const handleSelectCategory = (cat) => {
+    setSelectedCategory(cat);
+    setCurrentWordIndex(0);
+    setView('learning-detail');
+  };
+
+  const handleWordNav = (direction) => {
+    if (!selectedCategory) return;
+    if (direction === 'next') {
+      setCurrentWordIndex((prev) => (prev + 1) % selectedCategory.words.length);
+    } else {
+      setCurrentWordIndex((prev) => (prev - 1 + selectedCategory.words.length) % selectedCategory.words.length);
+    }
+  };
+
+  const handleSelectQuizMode = (mode) => {
+    setQuizMode(mode);
+    setView('quiz-game');
+  };
+
+  return (
+    <div className="font-sans antialiased text-gray-900 bg-gray-50 min-h-screen selection:bg-yellow-200 selection:text-yellow-900">
+      {view === 'home' && <HomeScreen onNavigate={setView} />}
+      
+      {view === 'learning' && (
+        <CategoryList 
+          onSelectCategory={handleSelectCategory} 
+          onBack={() => setView('home')} 
+        />
+      )}
+
+      {view === 'learning-detail' && selectedCategory && (
+        <WordCard 
+          word={selectedCategory.words[currentWordIndex]} 
+          categoryColor={selectedCategory.theme}
+          onNext={() => handleWordNav('next')}
+          onPrev={() => handleWordNav('prev')}
+          onBack={() => setView('learning')}
+        />
+      )}
+
+      {view === 'quiz' && (
+        <QuizModeSelect 
+          onSelectMode={handleSelectQuizMode}
+          onBack={() => setView('home')}
+        />
+      )}
+
+      {view === 'quiz-game' && (
+        <QuizGame 
+          mode={quizMode} 
+          onBack={() => setView('home')}
+        />
+      )}
+    </div>
+  );
+}
